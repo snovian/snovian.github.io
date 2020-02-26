@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content="Blog, java">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          PowerMock的使用 - Simon Dong | Blog
+        
+    </title>
+
+    <link rel="canonical" href="//springworks.cc/posts/8373aef6.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header/fractal/article.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Java" title="Java">Java</a>
+                            
+                              <a class="tag" href="/tags/#UnitTest" title="UnitTest">UnitTest</a>
+                            
+                        </div>
+                        <h1>PowerMock的使用</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Simon Dong on
+                            2018-12-21
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Simon&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h3><span id="0x00-术语">0x00 术语</span></h3><ul>
+<li>UT: Unit Test，单元测试</li>
+<li>SIT: System Integration Test，集成测试</li>
+<li>UAT: User Acceptance Test，用户验收测试</li>
+</ul>
+<h3><span id="0x01-什么是单元测试">0x01 什么是单元测试</span></h3><p>单元测试是用于保证在特定的条件或场景的输入下，函数（或方法）的输出符合需求或设计的功能要求，其主要目的是<strong>提高代码质量和可维护性</strong>。单元测试带来的好处主要有：</p>
+<ul>
+<li>适应变更：在需求变更或重构代码后，确保已有的模块仍然正确工作。如果变更导致了错误发生，单元测试能够快速定位错误</li>
+<li>简化集成：单元测试在一定程度上消除了单元代码的不可靠性，通过测试单个代码构造来保证集成后的软件可靠性。</li>
+<li>文档记录：单元测试在一定程度上体现了需求功能，并可以直观的展现函数（方法）是如何被调用。</li>
+<li>表达设计：单元测试数据集的构造和使用，能在一定程度上表达该函数对数据集处理的设计思想。</li>
+</ul>
+<p>单元测试的方法主要有：</p>
+<ol>
+<li>条件判断法：注重对方法中的逻辑条件的检查和测试，目的是测试代码中的条件错误。</li>
+<li>数据划分法：注重对有效或无效数据集输入的测试，目的是测试代码对无效数据集的处理是否健壮。</li>
+<li>边界值法：是数据划分法的特例，注重测试代码对于边界值和边界值两侧的输入是否能够正确处理。一般来说，边界值有“最小值”、略高于最小值、正常值、略低于最高值、最高值等几种取值方式。</li>
+</ol>
+<p>单元测试编写的基本准则：可参考<a href="https://petroware.no/unittesting.html" target="_blank" rel="noopener">https://petroware.no/unittesting.html </a>， 重要的有</p>
+<ul>
+<li>对测试进行评估(Measure the tests) ： 检查测试用例的代码覆盖率</li>
+<li>立即修复失败的测试用例(Fix failing tests immediately)：团队协同和持续集成的要求</li>
+<li>由简入繁(Start off simple)：对于一个类或方法的测试，应先搭建测试骨架，然后一步步填充不同场景或数据集进行条件类型的测试。</li>
+<li>保持测试的独立性(Keep test independent)：测试用例之间应相互独立，不可相互依赖。对于被测试类可能在其内部维护状态变量时，应特别注意这一点。在测试用例执行过程中，被测类的内部变量可能因测试而改变。</li>
+<li>合理命名测试用例(Name tests properly)：将测试类命名为\<class\>test，测试方法命名为test\<method\>或\<method\></method\></method\></class\></li>
+<li>覆盖边界值(Cover boundary cases)：确保边界值都被测试</li>
+<li>提供负向测试(Provide negative tests)：负向测试是指提供有问题的输入，来验证代码的可靠性和是否能正确处理错误输入。</li>
+<li>为每个Bug编写测试用例(Write tests to reproduce bugs)：在修复Bug前，为每个Bug编写能重现该Bug的测试用例，以确保在Bug修复后，测试用例能正确通过。</li>
+</ul>
+<h3><span id="0x02-mock">0x02 Mock</span></h3><h4><span id="mock是什么">mock是什么</span></h4><p>mock是模拟对象，用于模拟真实对象的行为。</p>
+<p>mock测试的含义就是在测试过程中，对于某些不容易构造或者与环境相关的对象，模拟其输入输出以便测试的测试方法。mock对象就是真实对在测试期间的替代品。</p>
+<p>例如：当测试类A时，类B需要读取数据库中的数据，类C是一个具有复杂逻辑的类，那么此时我们创建类B和类C的Mock对象进行测试</p>
+<p><img src="/images/1545495704843.png" alt></p>
+<h4><span id="mock的关键点">Mock的关键点</span></h4><p><code>Mock对象</code>： 模拟对象的概念就是我们想要创建一个可以替代实际对象的对象，这个模拟对象要可以通过特定参数调用特定的方法,并且能返回预期结果。</p>
+<p><code>Stub(桩)</code>：桩指的是用来替换具体功能的程序段。桩程序可以用来模拟已有程序的行为或是对未完成开发程序的一种临时替代。</p>
+<p><code>设置预期</code>： 通过设置预期明确 Mock 对象执行时会发生什么，比如返回特定的值、抛出一个异常、触发一个事件等，又或者调用一定的次数。</p>
+<p>比如上图的类B有如下代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassB</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getOrder</span><span class="params">(<span class="keyword">int</span> id)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> DbReader.readOrder(id);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用PowerMock的代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Mock对象</span></span><br><span class="line">ClassB mockB = mock(ClassB.class);</span><br><span class="line"><span class="comment">//Stub</span></span><br><span class="line">when(mockB.getOrder(anyInt())).thenReturn(<span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+<h4><span id="mock的好处">Mock的好处</span></h4><ul>
+<li><code>TDD(测试驱动开发)</code>: 可以根据需求提前创建测试</li>
+<li><code>隔离模块</code>: 在软件开发中，为了避免代码的紧耦合和提高可扩展性，一般都会采用分层架构进行设计，单一模块仅关注单一功能的实现，Mock可以模拟本模块依赖的其它的模块。</li>
+<li><code>解耦资源限制</code>：在某些代码需要访问外部资源（如数据库、文件系统、网络）等情况下，Mock可以模拟这些操作从而解除对外部资源的依赖。</li>
+</ul>
+<h4><span id="java的mock框架">Java的Mock框架</span></h4><ul>
+<li><code>EasyMock</code>是早期比较流行的Mock测试框架，它提供对接口的模拟，能够通过录制、回放、检查三步来完成测试过程，可以验证方法的调用、次数和顺序，可以令Mock对象返回指定的值或抛出异常。</li>
+<li><code>mockito</code>是在<code>EasyMock</code>之后流程的mock工具，相对<code>EasyMock</code>来说，<code>mockito</code>的API更简洁，学习曲线低，测试代码的可读性强，并且<code>mockito</code>增加了局部模拟<code>doCallRealMethod()</code>和<code>spy()</code><ul>
+<li><code>mock</code>: 生成的类中所有的方法都是被mock的方法，通过<code>when...thenReturn</code>指定返回值</li>
+<li><code>spy</code>: 生成的类中所有的方法都是实际的方法（执行过程中运行方法中的代码）,但返回的值由<code>when...thenReturn</code>指定</li>
+</ul>
+</li>
+<li><code>mockito2</code>是<code>mockito</code>的升级级，提供了更简洁的API语法<ul>
+<li>mock底层引擎由CGLIB更改为ByteBuddy</li>
+<li>Java8兼容</li>
+</ul>
+</li>
+<li><code>PowerMock</code>在是<code>EasyMock</code>和<code>mockito</code>基础上扩展的，因此<code>PowerMock</code>有两个可选的版本，分别是基于<code>EasyMock</code>和基于<code>mockito</code>，<code>PowerMock</code>解决了对<code>static</code>、<code>final</code>、<code>private</code>等方法的mock。</li>
+</ul>
+<p>以下是Java各种Mock框架的特性比较</p>
+<p><img src="/images/20181223001.png" alt="Java 各种Mock框架的特性比较"></p>
+<h3><span id="0x03-配置">0x03 配置</span></h3><h4><span id="maven依赖">Maven依赖</span></h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.powermock<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>powermock-api-mockito<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.7.4<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.powermock<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>powermock-module-junit4<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.7.4<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.11<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3><span id="0x04-基础使用">0x04 基础使用</span></h3><h4><span id="一般步骤">一般步骤</span></h4><ol>
+<li>使用<code>PowerMockito.mock(Class&lt;T&gt; clazz)</code>创建需要被mock的对象实例。一般来说，mock的对象是被测类中所依赖的其它类的实例。</li>
+<li>对Mock的对象，使用<code>when...thenReturn</code>或者<code>doNothing().when(...).&lt;method&gt;(...)</code>或者<code>doThrow(Throwable).when(...).&lt;method&gt;(...)</code>创建桩(Stub)。</li>
+<li>在单元测试中，使用<code>Junit.Assert</code>中相应的方法验证返回值是否与期望一致，或者使用<code>PowerMockito.verify(&lt;mockObject&gt;, times(int)).&lt;method&gt;(...)</code>验证Mock对象中相应方法被调用的次数。</li>
+<li>如果一个对象，仅需mock它的部分方法，而其它方法希望与其实对象的行为一致，可以使用<code>PowerMockito.spy(Class&lt;T&gt; clazz)</code>代替<code>PowerMockito.mock(Class&lt;T&gt; clazz)</code>，需要mock的方法通过第2步的<code>when...thenReturn</code>之类的方式。</li>
+<li>若需要在运行过程中修改mock对象的私有属性值，可以使用：<ul>
+<li><code>mockito 1.0</code>: <code>Whitebox.setInternalState(mockObject, &quot;fieldName&quot;, fieldValue)</code></li>
+<li><code>mockito 2.0</code>:<code>FieldSetter.setField(mockObject, originFieldValue, newFieldValue)</code></li>
+</ul>
+</li>
+</ol>
+<h4><span id="方法参数通配符">方法参数通配符</span></h4><p>​    在测试过程，不需要关注Mock对象的方法输入时，可以使用<code>anyInt</code>、<code>anyString</code>、<code>any(Class&lt;T&gt; clazz)</code>等方法通配符，可参考<code>org.mockito.Matchers</code>类中相关的方法。</p>
+<p>​    若Mock的方法中，仅关注其中某几个参数的输入值时，可使用<code>eq(&lt;parameterValue&gt;)</code>作为通配符。</p>
+<h4><span id="powermock结合junit的骨架代码">PowerMock结合Junit的骨架代码</span></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RunWith</span>(PowerMockRunner.class)</span><br><span class="line"><span class="meta">@PrepareForTest</span>(&#123;StaticBean.class&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExampleTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Mock</span></span><br><span class="line">    <span class="keyword">private</span> mockBean mockBean;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Spy</span></span><br><span class="line">    <span class="keyword">private</span> SpyBean spyBean;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@InjectMocks</span></span><br><span class="line">    <span class="keyword">private</span> TestBean testBean;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@BeforeClass</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">beforeClass</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Before</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@After</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">after</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@AfterClass</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">afterClass</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>@RunWith</code>: 是<code>Junit</code>提供的扩展接口，将具体的测试类代理给RunWith指定的运行器执行。</li>
+<li><code>@PrepareForTest</code>: 对<code>final class</code>或<code>inner class</code>或指定的class中有静态方法或native方法进行mock准备。这个注解可同时用于类和方法。与<code>@PrepareOnlyThisForTest</code>的区别在于<code>@PrepareForTest</code>所mock的包括父类所含有的上述类型方法或类。</li>
+<li><code>@Mock</code>: 对相应的类进行Mock操作</li>
+<li><code>@Spy</code>: 对相应的类进行Spy操作</li>
+<li><code>@InjectMocks</code>: 在被测试的对象中注入<code>@Mock</code>或<code>@Spy</code>的生成的对象（如果被测试的对象有相应的属性）</li>
+<li><code>@BeforeClass</code>: 这是<code>Junit</code>的注解，相当于类中<code>static</code>代码块，在测试类初始化的时候执行且仅执行一次</li>
+<li><code>@Before</code>： 在执行每个<code>@Test</code>标注的方法之前，执行本方法</li>
+<li><code>@After</code>：在执行第个<code>@Test</code>标注的方法之后，执行本方法</li>
+<li><code>@AfterClass</code>：在所有<code>@Test</code>方法执行后，执行本方法且仅执行一次，相当于测试类的析构方法。</li>
+</ul>
+<p>一个Junit单元测试在运行过程的顺序：</p>
+<p><code>@BeforeClass</code> -&gt;<code>@Before</code> -&gt; <code>@Test</code> -&gt; <code>@After</code> -&gt; <code>@AfterClass</code></p>
+<p>其中，每一个<code>@Test</code>运行时，有</p>
+<p><code>@Before</code> -&gt; <code>@Test</code> -&gt; <code>@After</code></p>
+<p>一般来说，在<code>@Before</code>中，准备通用的Mock桩数据和一些资源，而在<code>@After</code>中可以重置桩数据或释放资源。</p>
+<h3><span id="0x05-测试示例">0x05 测试示例</span></h3><p>我们将以典型SSM项目作为示例代码说明单元测试如何编写</p>
+<p><code>Employee</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Employee</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Employee</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.username = username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getUsername</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> username;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUsername</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.username = username;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>EmployeeDao</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Repository</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">EmployeeDao</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function">Employee <span class="title">getEmployeeById</span><span class="params">(String id)</span> </span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">List&lt;Employee&gt; <span class="title">getAll</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">save</span><span class="params">(Employee employee)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>SapDao</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Repository</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SapDao</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> JdbcTemplate jdbcTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Transactional</span>(readOnly = <span class="keyword">true</span>, rollbackFor = Exception.class)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">countAccountsById</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">        String sql = <span class="string">"SELECT count(*) FROM sap WHERE id=?"</span>;</span><br><span class="line">        <span class="keyword">return</span> countAccountRealMehtod(sql, id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">countAccountRealMehtod</span><span class="params">(String sql, String id)</span> </span>&#123;</span><br><span class="line">        Object[] parameters = <span class="keyword">new</span> Object[<span class="number">1</span>];</span><br><span class="line">        parameters[<span class="number">0</span>] = id;</span><br><span class="line">        Integer count = jdbcTemplate.queryForObject(sql, parameters, <span class="keyword">new</span> RowMapper&lt;Integer&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Integer <span class="title">mapRow</span><span class="params">(ResultSet rs, <span class="keyword">int</span> rowNum)</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">                <span class="keyword">while</span> (rs.next()) &#123;</span><br><span class="line">                    <span class="keyword">return</span> rs.getInt(<span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>EmployeeService</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EmployeeService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> EmployeeDao employeeDao;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SapDao sapDao;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Employee <span class="title">getEmployeeById</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (id == <span class="keyword">null</span> || id.trim().isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Illegal employee id"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> employeeDao.getEmployeeById(id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;Employee&gt; <span class="title">getAll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> employeeDao.getAll();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">save</span><span class="params">(Employee employee)</span> </span>&#123;</span><br><span class="line">        employeeDao.save(employee);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isSapAccountExist</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sapDao.countAccountsById(id) &gt; <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getEmployeeAsJson</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">        Employee employee = <span class="keyword">this</span>.getEmployeeById(id);</span><br><span class="line">        <span class="keyword">return</span> JsonUtils.toJson(employee);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>JsonUtils</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">JsonUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">toJson</span><span class="params">(Employee employee)</span> <span class="keyword">throws</span> IllegalFormatException </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (employee == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"null employee"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> employee.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通常情况下，SSM的应用的存储层（DAO层）一般都是以接口形式存在，不需要进行测试。</p>
+<h4><span id="employeeservice的单元测试">EmployeeService的单元测试</span></h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.junit.Before;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"><span class="keyword">import</span> org.junit.runner.RunWith;</span><br><span class="line"><span class="keyword">import</span> org.mockito.InjectMocks;</span><br><span class="line"><span class="keyword">import</span> org.mockito.Mock;</span><br><span class="line"><span class="keyword">import</span> org.mockito.Mockito;</span><br><span class="line"><span class="keyword">import</span> org.mockito.Spy;</span><br><span class="line"><span class="keyword">import</span> org.mockito.invocation.InvocationOnMock;</span><br><span class="line"><span class="keyword">import</span> org.mockito.stubbing.Answer;</span><br><span class="line"><span class="keyword">import</span> org.powermock.core.classloader.annotations.PrepareForTest;</span><br><span class="line"><span class="keyword">import</span> org.powermock.modules.junit4.PowerMockRunner;</span><br><span class="line"><span class="keyword">import</span> org.powermock.reflect.Whitebox;</span><br><span class="line"><span class="keyword">import</span> org.springframework.jdbc.core.JdbcTemplate;</span><br><span class="line"><span class="keyword">import</span> org.springframework.jdbc.core.RowMapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.sql.ResultSet;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.junit.Assert.assertEquals;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.junit.Assert.assertFalse;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.junit.Assert.assertNull;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.junit.Assert.assertTrue;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.mockito.Matchers.any;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.mockito.Matchers.anyInt;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.mockito.Matchers.anyString;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.mockito.Matchers.eq;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.mockito.Mockito.verify;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.powermock.api.mockito.PowerMockito.doNothing;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.powermock.api.mockito.PowerMockito.doReturn;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.powermock.api.mockito.PowerMockito.doThrow;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.powermock.api.mockito.PowerMockito.mock;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.powermock.api.mockito.PowerMockito.mockStatic;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> org.powermock.api.mockito.PowerMockito.when;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 示例测试类</span></span><br><span class="line"><span class="comment"> * JsonUtils是final class，并调用了其static method</span></span><br><span class="line"><span class="comment"> * 因此需要使用<span class="doctag">@PreparForTest</span>声明</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RunWith</span>(PowerMockRunner.class)</span><br><span class="line"><span class="meta">@PrepareForTest</span>(&#123;JsonUtils.class&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EmployeeServiceTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Mock对象</span></span><br><span class="line"><span class="comment">     * 所有的访问都代理至PowerMock内部</span></span><br><span class="line"><span class="comment">     * 所有的方法在默认情况下都返回null</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Mock</span></span><br><span class="line">    <span class="keyword">private</span> EmployeeDao employeeDao;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Spy对象</span></span><br><span class="line"><span class="comment">     * Spy的对象是真实对象</span></span><br><span class="line"><span class="comment">     * 只有doReturn...when所代理的方法会返回期望值</span></span><br><span class="line"><span class="comment">     * 其实方法返回真实运行结果</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Spy</span></span><br><span class="line">    <span class="keyword">private</span> SapDao sapDao = <span class="keyword">new</span> SapDao();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 被测试类</span></span><br><span class="line"><span class="comment">     * 当类中有Mock对象或Spy对象所对应的引用时，自动注入</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@InjectMocks</span></span><br><span class="line">    <span class="keyword">private</span> EmployeeService employeeService;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Before</span>方法</span></span><br><span class="line"><span class="comment">     * 在每个Test运行之前运行</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Before</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//预备测试用数据</span></span><br><span class="line">        List&lt;Employee&gt; employees = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        employees.add(<span class="keyword">new</span> Employee(<span class="string">"User01"</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">//Stub（桩），调用Mock或Spy对象时，期望的返回值</span></span><br><span class="line">        when(employeeDao.getAll()).thenReturn(employees);</span><br><span class="line">        when(employeeDao.getEmployeeById(anyString())).thenReturn(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testGetEmployeeById</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//Stub，覆盖@Before中的对应Stub，</span></span><br><span class="line">        <span class="comment">// 多个thenReturn按照employeeDao.getEmployeeById()的调用顺序返回，</span></span><br><span class="line">        when(employeeDao.getEmployeeById(anyString()))</span><br><span class="line">                .thenReturn(<span class="keyword">new</span> Employee(<span class="string">"User02"</span>))</span><br><span class="line">                .thenReturn(<span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//返回第一个thenReturn的结果</span></span><br><span class="line">        Employee employee = employeeService.getEmployeeById(<span class="string">"02"</span>);</span><br><span class="line">        assertEquals(<span class="string">"User02"</span>, employee.getUsername());</span><br><span class="line">        <span class="comment">//返回第二个thenReturn的结果</span></span><br><span class="line">        assertNull(employeeService.getEmployeeById(<span class="string">"02"</span>));</span><br><span class="line">        <span class="comment">//无其它thenReturn，返回最后一个ThenReturn结果(第二个thenReturn)</span></span><br><span class="line">        assertNull(employeeService.getEmployeeById(<span class="string">"02"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 期望被测方法抛出异常时，使用<span class="doctag">@Test</span>(expected=Class&lt;T implements Throwable&gt;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span>(expected = IllegalArgumentException.class)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testGetEmployeeByIllegalId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        employeeService.getEmployeeById(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testGetAll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;Employee&gt; allEmployees = employeeService.getAll();</span><br><span class="line">        assertEquals(<span class="number">1</span>, allEmployees.size());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 使用doNothing()方法控制void返回值方法</span></span><br><span class="line"><span class="comment">     * 使用verify方法验证Mock对象中内部方法的是否被调用，调用的次数是多少</span></span><br><span class="line"><span class="comment">     * 使用verifyStatic可验证静态方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testSave</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        doNothing().when(employeeDao).save(any(Employee.class));</span><br><span class="line">        employeeService.save(<span class="keyword">new</span> Employee(<span class="string">"User03"</span>));</span><br><span class="line">        verify(employeeDao, Mockito.times(<span class="number">1</span>)).save(any(Employee.class));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 对Spy对象中的方法打桩，应使用doReturn...when...method的方式</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testSapAccountExisted</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        doReturn(<span class="number">1</span>).when(sapDao).countAccountsById(eq(<span class="string">"1"</span>));</span><br><span class="line">        assertTrue(employeeService.isSapAccountExist(<span class="string">"1"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 静态方法的单元测试</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testGetEmployeeAsJson</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//对静态方法的Mock和Stub</span></span><br><span class="line">        mockStatic(JsonUtils.class);</span><br><span class="line">        when(JsonUtils.toJson(any(Employee.class))).thenReturn(<span class="string">""</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//getEmployeeAsJson首先调用EmployeeService.getEmployeeId，这一方法调用了EmployeeDao.getEmployeeId</span></span><br><span class="line">        <span class="comment">//因此，EmployeeDao.getEmployeeId也需要Stub</span></span><br><span class="line">        when(employeeDao.getEmployeeById(anyString())).thenReturn(<span class="keyword">new</span> Employee(<span class="string">"User01"</span>));</span><br><span class="line"></span><br><span class="line">        assertEquals(<span class="string">""</span>, employeeService.getEmployeeAsJson(<span class="string">"1"</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模拟Mock或Spy对象方法的异常抛出</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span>(expected = RuntimeException.class)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testSapAccountExistedException</span><span class="params">()</span></span>&#123;</span><br><span class="line">        doThrow(<span class="keyword">new</span> RuntimeException(<span class="string">"throw via unit test"</span>)).when(sapDao).countAccountsById(anyString());</span><br><span class="line"></span><br><span class="line">        employeeService.isSapAccountExist(<span class="string">"2"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 模拟静态方法的异常抛出</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span>(expected = IllegalArgumentException.class)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testGetEmployeeAsJson3</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">//模拟抛出异常</span></span><br><span class="line">        mockStatic(JsonUtils.class);</span><br><span class="line">        doThrow(<span class="keyword">new</span> IllegalArgumentException(<span class="string">"throw via unit test"</span>)).when(JsonUtils.class, <span class="string">"toJson"</span>, any(Employee.class));</span><br><span class="line"></span><br><span class="line">        when(employeeDao.getEmployeeById(anyString())).thenReturn(<span class="keyword">new</span> Employee(<span class="string">"User01"</span>));</span><br><span class="line"></span><br><span class="line">        employeeService.getEmployeeAsJson(<span class="string">"1"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 本方法本应在SapDaoTest类中，为了说明方便，特列于此</span></span><br><span class="line"><span class="comment">     * 本测试展示 when...thenAnswer的用法，对于较复杂的返回模拟可以用此方法</span></span><br><span class="line"><span class="comment">     * doAnswer模拟返回了一个RowMapper的应答。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testSapDaoCountAccountRealMehtod</span><span class="params">()</span></span>&#123;</span><br><span class="line">        JdbcTemplate template = mock(JdbcTemplate.class);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//由于sapDao是一个Spy对象，其在初始化时未注入jdbcTemplate，同时它也未提供相应的</span></span><br><span class="line">        <span class="comment">//Getter/Setter方法，因此需要使用Whitebox直接修改类内部变量的值</span></span><br><span class="line">        <span class="comment">//Whitebox同时可用于Mock对象</span></span><br><span class="line">        Whitebox.setInternalState(sapDao, <span class="string">"jdbcTemplate"</span>, template);</span><br><span class="line"></span><br><span class="line">        when(template.queryForObject(anyString(), any(Object[].class), any(RowMapper.class))).thenAnswer(<span class="keyword">new</span> Answer&lt;Integer&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> Integer <span class="title">answer</span><span class="params">(InvocationOnMock invocation)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                <span class="comment">/**</span></span><br><span class="line"><span class="comment">                 * invocation是被模拟方法Mock相关参数</span></span><br><span class="line"><span class="comment">                 */</span></span><br><span class="line">                Object[] args = invocation.getArguments();</span><br><span class="line">                RowMapper&lt;Integer&gt; rm = (RowMapper&lt;Integer&gt;) args[<span class="number">2</span>];</span><br><span class="line">                ResultSet rs = mock(ResultSet.class);</span><br><span class="line">                when(rs.getInt(anyInt())).thenReturn(<span class="number">0</span>);</span><br><span class="line">                <span class="comment">//此处调用了SapDao中实现的mapRow方法</span></span><br><span class="line">                Integer value = rm.mapRow(rs, <span class="number">1</span>);</span><br><span class="line">                <span class="keyword">return</span> value;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        assertFalse(employeeService.isSapAccountExist(<span class="string">"1"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>基本上，PowerMock常用的方式都已在此测试类中了。</p>
+<h3><span id="0x06-reference">0x06 Reference</span></h3><ol>
+<li><p><a href="https://zh.wikipedia.org/wiki/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95" target="_blank" rel="noopener">单元测试</a></p>
+</li>
+<li><p><a href="https://petroware.no/unittesting.html" target="_blank" rel="noopener">Unit Testing Guidelines</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/lqadam/article/details/78939161" target="_blank" rel="noopener">PowerMockito 快速上手记要</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/wwh578867817/article/details/51934404" target="_blank" rel="noopener">Mock 模拟测试简介及 Mockito 使用入门</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/bboyfeiyu/article/details/45136299" target="_blank" rel="noopener">软件架构模式之分层架构</a></p>
+</li>
+<li><p><a href="https://www.cnblogs.com/huangbin/archive/2013/04/27/3047671.html" target="_blank" rel="noopener">java的mock测试框架</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/u014558484/article/details/53150915" target="_blank" rel="noopener">JUnit4中@AfterClass @BeforeClass @After @Before的区别对比</a></p>
+</li>
+</ol>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/posts/56e2a282.html" data-toggle="tooltip" data-placement="top" title="Install Redmine with Docker">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/posts/59379605.html" data-toggle="tooltip" data-placement="top" title="Docker环境设置">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Java" title="Java">Java</a>
+                        
+                          <a class="tag" href="/tags/#UnitTest" title="UnitTest">UnitTest</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<!-- mathjax-->
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/snovian">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Simon Dong 2020 Build Number #20200226.2
+                    <br>
+                    Theme by <a href="http://beantech.org">BeanTech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span>                    
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("//springworks.cc/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="//springworks.cc/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content>
+    <meta name="keyword" content="Blog, java">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          My Ant Build File - Simon Dong | Blog
+        
+    </title>
+
+    <link rel="canonical" href="//springworks.cc/posts/7938a94b.html">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header/fractal/article.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#Ant" title="Ant">Ant</a>
+                            
+                        </div>
+                        <h1>My Ant Build File</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by Simon Dong on
+                            2014-10-02
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Simon&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h3><span id="eclipse中的设定">Eclipse中的设定：</span></h3><p>需要设定一个Ant属性：build_dir，指明build.xml和相关文件的存放路径。<br>设定值在”Preferences-&gt;Ant-&gt;Runtime-&gt;Properties”,添加一个property，<br>name: build_dir<br>value:’<build文件所在绝对路径>‘</build文件所在绝对路径></p>
+<h3><span id="buildinitxml">build.init.xml</span></h3><p>这个Build文件用于根据project.template文件生成project.properties文件，目前仅存放项目的根路径，build.init.xml中的Target：SetBase仅需要运行一次即可。<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">name</span>=<span class="string">"General Init project Root"</span> <span class="attr">default</span>=<span class="string">"setBase"</span> &gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"setBase"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">copy</span> <span class="attr">file</span>=<span class="string">"$&#123;build_dir&#125;/project.template"</span> <span class="attr">tofile</span>=<span class="string">"$&#123;build_dir&#125;/project.properties"</span> <span class="attr">overwrite</span>=<span class="string">"true"</span> <span class="attr">force</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">replace</span> <span class="attr">file</span>=<span class="string">"$&#123;build_dir&#125;/project.properties"</span> <span class="attr">token</span>=<span class="string">"@project_loc@"</span> <span class="attr">value</span>=<span class="string">"$&#123;project_loc&#125;"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">replaceregexp</span> <span class="attr">file</span>=<span class="string">"$&#123;build_dir&#125;/project.properties"</span> <span class="attr">match</span>=<span class="string">"\\"</span> <span class="attr">flags</span>=<span class="string">"g"</span> <span class="attr">replace</span>=<span class="string">"/"</span> <span class="attr">byline</span>=<span class="string">"false"</span>/&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">echo</span> <span class="attr">message</span>=<span class="string">"Project Base Set To: $&#123;project_loc&#125;"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>project.template<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">project_loc=@project_loc@</span><br></pre></td></tr></table></figure></p>
+<h3><span id="buildxml">build.xml</span></h3><p>target:copyMavenLib，将Maven依赖拷贝到WebContent/WEB-INF/lib目录下，这一任务依赖于maven-ant-tasks扩展，其jar包的下载地址<a href="http://central.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.3/maven-ant-tasks-2.1.3.jar" target="_blank" rel="noopener">maven-ant-tasks-2.1.3.jar</a></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">name</span>=<span class="string">"General Build File"</span> <span class="attr">default</span>=<span class="string">"generateSite"</span>  <span class="attr">xmlns:artifact</span>=<span class="string">"urn:maven-artifact-ant"</span> <span class="attr">basedir</span>=<span class="string">"."</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">file</span>=<span class="string">"$&#123;build_dir&#125;/project.properties"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"SiteBase"</span> <span class="attr">value</span>=<span class="string">"$&#123;project_loc&#125;/site"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"WebBase"</span> <span class="attr">value</span>=<span class="string">"$&#123;project_loc&#125;/WebContent"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"ClassBase"</span> <span class="attr">value</span>=<span class="string">"$&#123;WebBase&#125;/WEB-INF/classes"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"LibBase"</span> <span class="attr">value</span>=<span class="string">"$&#123;WebBase&#125;/WEB-INF/lib"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"extLib"</span> <span class="attr">value</span>=<span class="string">"$&#123;project_loc&#125;/extLib"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">&lt;!--Target Begin --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"copyMavenLib"</span>&gt;</span></span><br><span class="line">		<span class="comment">&lt;!--define Maven POM --&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">typedef</span> <span class="attr">resource</span>=<span class="string">"org/apache/maven/artifact/ant/antlib.xml"</span> <span class="attr">uri</span>=<span class="string">"urn:maven-artifact-ant"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">classpath</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">pathelement</span> <span class="attr">location</span>=<span class="string">"$&#123;build_dir&#125;/maven-ant-tasks-2.1.3.jar"</span> /&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">classpath</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">typedef</span>&gt;</span></span><br><span class="line">		</span><br><span class="line">		<span class="tag">&lt;<span class="name">artifact:pom</span> <span class="attr">file</span>=<span class="string">"$&#123;project_loc&#125;/pom.xml"</span> <span class="attr">id</span>=<span class="string">"project.pom"</span> /&gt;</span></span><br><span class="line">		</span><br><span class="line">		<span class="tag">&lt;<span class="name">artifact:dependencies</span> <span class="attr">pathId</span>=<span class="string">"dependency.classpath"</span> <span class="attr">filesetId</span>=<span class="string">"dependency.fileset"</span> <span class="attr">usescope</span>=<span class="string">"runtime"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">pom</span> <span class="attr">refid</span>=<span class="string">"project.pom"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">artifact:dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">copy</span> <span class="attr">todir</span>=<span class="string">"$&#123;LibBase&#125;"</span> <span class="attr">verbose</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">fileset</span> <span class="attr">refid</span>=<span class="string">"dependency.fileset"</span> /&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">mapper</span> <span class="attr">type</span>=<span class="string">"flatten"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">copy</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"copyExtLib"</span>&gt;</span>	</span><br><span class="line">		<span class="tag">&lt;<span class="name">copy</span> <span class="attr">todir</span>=<span class="string">"$&#123;LibBase&#125;"</span> <span class="attr">verbose</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">fileset</span> <span class="attr">dir</span>=<span class="string">"$&#123;extLib&#125;"</span> <span class="attr">includes</span>=<span class="string">"**/*"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">copy</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"copyToLib"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">mkdir</span> <span class="attr">dir</span>=<span class="string">"$&#123;LibBase&#125;"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">echo</span> <span class="attr">message</span>=<span class="string">"remove existing library files"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">delete</span> <span class="attr">includeEmptyDirs</span>=<span class="string">"true"</span> <span class="attr">failonerror</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">    		<span class="tag">&lt;<span class="name">fileset</span> <span class="attr">dir</span>=<span class="string">"$&#123;LibBase&#125;"</span> <span class="attr">includes</span>=<span class="string">"**/*"</span>/&gt;</span></span><br><span class="line">  		<span class="tag">&lt;/<span class="name">delete</span>&gt;</span>	</span><br><span class="line"></span><br><span class="line">  		<span class="tag">&lt;<span class="name">echo</span> <span class="attr">message</span>=<span class="string">"copy maven dependency files"</span> /&gt;</span></span><br><span class="line">  		<span class="tag">&lt;<span class="name">antcall</span> <span class="attr">target</span>=<span class="string">"copyMavenLib"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">  		<span class="tag">&lt;<span class="name">echo</span> <span class="attr">message</span>=<span class="string">"copy ext dependency files"</span> /&gt;</span></span><br><span class="line">  		<span class="tag">&lt;<span class="name">antcall</span> <span class="attr">target</span>=<span class="string">"copyExtLib"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">target</span> <span class="attr">name</span>=<span class="string">"generateSite"</span> <span class="attr">depends</span>=<span class="string">"copyToLib"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">mkdir</span> <span class="attr">dir</span>=<span class="string">"$&#123;SiteBase&#125;"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">echo</span> <span class="attr">message</span>=<span class="string">"remove all files in site"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">delete</span> <span class="attr">includeEmptyDirs</span>=<span class="string">"true"</span> <span class="attr">failonerror</span>=<span class="string">"false"</span>&gt;</span></span><br><span class="line">    		<span class="tag">&lt;<span class="name">fileset</span> <span class="attr">dir</span>=<span class="string">"$&#123;SiteBase&#125;"</span> <span class="attr">includes</span>=<span class="string">"**/*"</span>/&gt;</span></span><br><span class="line">  		<span class="tag">&lt;/<span class="name">delete</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  		<span class="tag">&lt;<span class="name">copy</span> <span class="attr">todir</span>=<span class="string">"$&#123;SiteBase&#125;"</span> <span class="attr">overwrite</span>=<span class="string">"true"</span> <span class="attr">force</span>=<span class="string">"true"</span> <span class="attr">includeEmptyDirs</span>=<span class="string">"true"</span> <span class="attr">verbose</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">  			<span class="tag">&lt;<span class="name">fileset</span> <span class="attr">dir</span>=<span class="string">"$&#123;WebBase&#125;"</span> <span class="attr">includes</span>=<span class="string">"**/*"</span> /&gt;</span></span><br><span class="line">  		<span class="tag">&lt;/<span class="name">copy</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/posts/c990d5d7.html" data-toggle="tooltip" data-placement="top" title="Eclipse syntax colors">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/posts/66f38ed6.html" data-toggle="tooltip" data-placement="top" title="PostgreSQL中Blob字段的处理">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <br>
+                
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Ant" title="Ant">Ant</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+<!-- mathjax-->
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/snovian">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Simon Dong 2020 Build Number #20200226.2
+                    <br>
+                    Theme by <a href="http://beantech.org">BeanTech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span>                    
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("//springworks.cc/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="//springworks.cc/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
